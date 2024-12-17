@@ -9,41 +9,44 @@ public class ComputerDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String computerForm;
 
-    @Column
+    @Column(nullable = false)
     private String computerManufacturer;
 
-    @Column
+    @Column(nullable = false)
     private String computerModelName;
 
-    @Column
+    @Column(nullable = false)
     private String computerModelNumber;
 
-    @Column
+    @Column(nullable = false)
     private String serialNumber;
 
-    @Column
+    @Column(nullable = false)
     private String operationSystem;
 
-    @Column
+    @Column(nullable = false)
     private String processor;
 
-    @Column
+    @Column(nullable = false)
     private String randomAccesMemory;
 
-    @Column
+    @Column(nullable = false)
     private String hardDriveCapacity;
 
-    @Column
+    @Column(nullable = false)
     private String monitorManufacturer;
 
-    @Column
+    @Column(nullable = false)
     private String keyboardManufacturer;
 
-    @Column
+    @Column(nullable = false)
     private String mouseManufacturer;
+
+    @Column(nullable = true)
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -147,6 +150,14 @@ public class ComputerDetails {
 
     public void setMouseManufacturer(String mouseManufacturer) {
         this.mouseManufacturer = mouseManufacturer;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 }

@@ -9,14 +9,17 @@ public class Printer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String printerManfacturer;
+    @Column(nullable = false)
+    private String printerManufacturer;
 
-    @Column
+    @Column(nullable = false)
     private String printerModel;
 
-    @Column
+    @Column(nullable = false)
     private String printerSerilaNumber;
+
+    @Column(nullable = true)
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -26,12 +29,12 @@ public class Printer {
         this.id = id;
     }
 
-    public String getPrinterManfacturer() {
-        return printerManfacturer;
+    public String getPrinterManufacturer() {
+        return printerManufacturer;
     }
 
-    public void setPrinterManfacturer(String printerManfacturer) {
-        this.printerManfacturer = printerManfacturer;
+    public void setPrinterManufacturer(String printerManufacturer) {
+        this.printerManufacturer = printerManufacturer;
     }
 
     public String getPrinterModel() {
@@ -48,6 +51,14 @@ public class Printer {
 
     public void setPrinterSerilaNumber(String printerSerilaNumber) {
         this.printerSerilaNumber = printerSerilaNumber;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 }
