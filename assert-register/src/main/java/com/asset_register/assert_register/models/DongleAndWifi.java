@@ -9,23 +9,26 @@ public class DongleAndWifi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String dongleOrRouterManfacturer;
 
-    @Column
+    @Column(nullable = false)
     private String dongleOrRouterModel;
 
-    @Column
+    @Column(nullable = false)
     private String dongleOrRouterImeiNumber;
 
-    @Column
+    @Column(nullable = false)
     private String dongleOrRouterSerialNumber;
 
-    @Column
+    @Column(nullable = false)
     private String mobileNumber;
 
-    @Column
+    @Column(nullable = false)
     private String mobileNumberOperator;
+
+    @Column(nullable = true)
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -81,6 +84,19 @@ public class DongleAndWifi {
 
     public void setMobileNumberOperator(String mobileNumberOperator) {
         this.mobileNumberOperator = mobileNumberOperator;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public DongleAndWifi save(DongleAndWifi dongleWifi) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
 }
