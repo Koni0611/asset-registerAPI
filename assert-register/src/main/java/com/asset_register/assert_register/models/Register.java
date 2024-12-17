@@ -15,7 +15,8 @@ public class Register {
     @Column(nullable = false)
     private String surname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 13)
+    @Pattern(regexp = "\\d{13}", message = "Identity Number must be exactly 13 digits.")
     private String identityNumber;
 
     @Column(nullable = false)
@@ -24,13 +25,16 @@ public class Register {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
+    @Pattern(regexp = "\\d{10}", message = "Phone Number must be exactly 10 digits.")
     private String phoneNumber;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
+    @Size(min = 7, message = "Password must be at least 7 characters long.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{7,}$", message = "Password must contain an uppercase letter, lowercase letter, a number, and a special character.")
     private String password;
 
     @Column(nullable = false)
