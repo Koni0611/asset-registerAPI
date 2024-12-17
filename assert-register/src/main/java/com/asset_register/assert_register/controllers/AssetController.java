@@ -14,11 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/assets")
@@ -39,6 +35,7 @@ public class AssetController {
     @Autowired
     private AuthService authService;
 
+    // Fetch all assets for a specific user
     @GetMapping("/user/{userId}")
     public ResponseEntity<Map<String, List<Object>>> getUserAssets(@PathVariable Long userId) {
         Map<String, List<Object>> assets = new HashMap<>();
@@ -50,12 +47,6 @@ public class AssetController {
         List<Printer> printers = printerRepository.findByUserId(userId);
         List<DongleAndWifi> dongles = dongleWifiRepository.findByUserId(userId);
 
-        // Log the fetched data
-        System.out.println("Computers: " + computers);
-        System.out.println("Mobiles: " + mobiles);
-        System.out.println("Printers: " + printers);
-        System.out.println("Dongles: " + dongles);
-
         assets.put("computers", new ArrayList<>(computers));
         assets.put("mobiles", new ArrayList<>(mobiles));
         assets.put("printers", new ArrayList<>(printers));
@@ -64,16 +55,37 @@ public class AssetController {
         return ResponseEntity.ok(assets);
     }
 
+    // New: Fetch a single asset by type and ID
+    @GetMapping("/{type}/{id}")
+    public ResponseEntity<Object> getAssetById(@PathVariable String type, @PathVariable Long id) {
+        switch (type.toLowerCase()) {
+            case "computers":
+                return computerDetailsRepository.findById(id)
+                        .map(asset -> ResponseEntity.ok((Object) asset))
+                        .orElse(ResponseEntity.notFound().build());
+            case "mobiles":
+                return mobilePhoneDetailsRepository.findById(id)
+                        .map(asset -> ResponseEntity.ok((Object) asset))
+                        .orElse(ResponseEntity.notFound().build());
+            case "printers":
+                return printerRepository.findById(id)
+                        .map(asset -> ResponseEntity.ok((Object) asset))
+                        .orElse(ResponseEntity.notFound().build());
+            case "dongles":
+                return dongleWifiRepository.findById(id)
+                        .map(asset -> ResponseEntity.ok((Object) asset))
+                        .orElse(ResponseEntity.notFound().build());
+            default:
+                return ResponseEntity.badRequest().body("Invalid asset type: " + type);
+        }
+    }
+
     // Methods for ComputerDetails
     @PostMapping("/computers")
     public ResponseEntity<ComputerDetails> addComputer(@RequestBody ComputerDetails computerDetails) {
         try {
             Long userId = authService.getCurrentUser().getId();
             computerDetails.setUserId(userId);
-
-            System.out.println("Debug: User ID retrieved from AuthService: " + userId);
-            System.out.println("Debug: Computer details to be saved: " + computerDetails);
-
             ComputerDetails savedComputer = computerDetailsRepository.save(computerDetails);
             return ResponseEntity.ok(savedComputer);
         } catch (IllegalStateException e) {
@@ -119,21 +131,15 @@ public class AssetController {
     }
 
     // Methods for MobilePhoneDetails
-
     @PostMapping("/mobiles")
     public ResponseEntity<MobilePhoneDetails> addMobile(@RequestBody MobilePhoneDetails mobilePhoneDetails) {
         try {
-            // Ensure userId is set using the authenticated user
             Long userId = authService.getCurrentUser().getId();
             mobilePhoneDetails.setUserId(userId);
-
-            System.out.println("Debug: User ID retrieved from AuthService: " + userId);
-            System.out.println("Debug: Mobile details to be saved: " + mobilePhoneDetails);
-
             MobilePhoneDetails savedMobile = mobilePhoneDetailsRepository.save(mobilePhoneDetails);
             return ResponseEntity.ok(savedMobile);
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(401).body(null); // Unauthorized if user is not logged in
+            return ResponseEntity.status(401).body(null);
         }
     }
 
@@ -174,10 +180,6 @@ public class AssetController {
         try {
             Long userId = authService.getCurrentUser().getId();
             printer.setUserId(userId);
-
-            System.out.println("Debug: User ID retrieved from AuthService: " + userId);
-            System.out.println("Debug: Printer details to be saved: " + printer);
-
             Printer savedPrinter = printerRepository.save(printer);
             return ResponseEntity.ok(savedPrinter);
         } catch (IllegalStateException e) {
@@ -191,7 +193,6 @@ public class AssetController {
         if (optionalPrinter.isPresent()) {
             Printer existingPrinter = optionalPrinter.get();
             existingPrinter.setPrinterManufacturer(printer.getPrinterManufacturer());
-
             existingPrinter.setPrinterModel(printer.getPrinterModel());
             existingPrinter.setPrinterSerilaNumber(printer.getPrinterSerilaNumber());
             existingPrinter.setUserId(printer.getUserId());
@@ -219,10 +220,6 @@ public class AssetController {
         try {
             Long userId = authService.getCurrentUser().getId();
             dongleAndWifi.setUserId(userId);
-
-            System.out.println("Debug: User ID retrieved from AuthService: " + userId);
-            System.out.println("Debug: Dongle details to be saved: " + dongleAndWifi);
-
             DongleAndWifi savedDongle = dongleWifiRepository.save(dongleAndWifi);
             return ResponseEntity.ok(savedDongle);
         } catch (IllegalStateException e) {

@@ -55,6 +55,21 @@ public class RegisterController {
 
     private Object adminKey;
 
+    @GetMapping("/user-details/{identityNumber}")
+    public ResponseEntity<?> getUserDetails(@PathVariable String identityNumber) {
+        // Fetch the user from the repository
+        Optional<Register> user = registerRepository.findByIdentityNumber(identityNumber);
+
+        // If user is not found, return a NOT_FOUND response
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with identity number " + identityNumber + " not found.");
+        }
+
+        // Return the user details
+        return ResponseEntity.ok(user.get());
+    }
+
     // Admin-only endpoint to get all users
     @GetMapping("/all")
     public ResponseEntity<List<Register>> getAllUsers() {
@@ -169,11 +184,12 @@ public class RegisterController {
 
     @PutMapping("/update/{identityNumber}")
     public ResponseEntity<?> updateUser(@PathVariable String identityNumber, @RequestBody Register register) {
+
         if (!authService.isAdmin()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Access denied. Only admins can update user details.");
         }
-
+        System.out.println("Received identityNumber: " + identityNumber);
         Optional<Register> optionalUser = registerRepository.findByIdentityNumber(identityNumber);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -181,12 +197,16 @@ public class RegisterController {
         }
 
         Register existingUser = optionalUser.get();
-        existingUser.setName(register.getName());
-        existingUser.setSurname(register.getSurname());
-        existingUser.setIdentityNumber(register.getIdentityNumber());
-        existingUser.setGender(register.getGender());
-        existingUser.setEmail(register.getEmail());
-        existingUser.setPhoneNumber(register.getPhoneNumber());
+        if (register.getName() != null)
+            existingUser.setName(register.getName());
+        if (register.getSurname() != null)
+            existingUser.setSurname(register.getSurname());
+        if (register.getGender() != null)
+            existingUser.setGender(register.getGender());
+        if (register.getEmail() != null)
+            existingUser.setEmail(register.getEmail());
+        if (register.getPhoneNumber() != null)
+            existingUser.setPhoneNumber(register.getPhoneNumber());
 
         try {
             Register updatedUser = registerRepository.save(existingUser);
